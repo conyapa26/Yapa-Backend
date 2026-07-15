@@ -16,10 +16,11 @@ import { TicketsModule } from './tickets/tickets.module';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      // ⚠️ synchronize solo debe estar en true en desarrollo.
-      // En producción puede alterar/borrar columnas o tablas sin control.
-      // Usa migraciones de TypeORM para producción.
-      synchronize: process.env.NODE_ENV !== 'production',
+      // ⚠️ synchronize crea/actualiza tablas automáticamente según las entidades.
+      // Es seguro usarlo la primera vez que se despliega (base de datos vacía).
+      // Una vez que la base de datos tenga datos reales, se recomienda apagarlo
+      // (quitar DB_SYNC=true) y usar migraciones de TypeORM en su lugar.
+      synchronize: process.env.DB_SYNC === 'true' || process.env.NODE_ENV !== 'production',
     }),
 
 
@@ -36,5 +37,3 @@ import { TicketsModule } from './tickets/tickets.module';
   providers: [],
 })
 export class AppModule { }
-
-
