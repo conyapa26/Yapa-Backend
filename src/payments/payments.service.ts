@@ -172,9 +172,14 @@ export class PaymentsService {
       'Estado',
     ];
 
+    // Usamos ';' como separador (en vez de ',') porque Excel en español
+    // reconoce automáticamente ';' como delimitador de columnas al abrir
+    // el archivo con doble click, sin necesidad de "Texto en columnas".
+    const DELIMITER = ';';
+
     const escapeCsv = (value: unknown): string => {
       const str = value === null || value === undefined ? '' : String(value);
-      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      if (str.includes(DELIMITER) || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`;
       }
       return str;
@@ -194,11 +199,11 @@ export class PaymentsService {
         p.status,
       ]
         .map(escapeCsv)
-        .join(','),
+        .join(DELIMITER),
     );
 
     // \uFEFF (BOM) al inicio para que Excel detecte bien los acentos (UTF-8).
-    return '\uFEFF' + [headers.join(','), ...rows].join('\n');
+    return '\uFEFF' + [headers.join(DELIMITER), ...rows].join('\n');
   }
 
   async getPaymentStatus(externalReference: string) {
