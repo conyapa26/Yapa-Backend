@@ -222,9 +222,20 @@ export class PaymentsService {
    * Pensado para limpiar compras de prueba antes del lanzamiento real.
    */
   async wipeTestData() {
-    const ticketsDeleted = await this.ticketRepository.delete({});
-    const paymentsDeleted = await this.paymentRepository.delete({});
-    const usersDeleted = await this.userRepository.delete({});
+    const ticketsDeleted = await this.ticketRepository
+      .createQueryBuilder()
+      .delete()
+      .execute();
+
+    const paymentsDeleted = await this.paymentRepository
+      .createQueryBuilder()
+      .delete()
+      .execute();
+
+    const usersDeleted = await this.userRepository
+      .createQueryBuilder()
+      .delete()
+      .execute();
 
     return {
       wiped: true,
