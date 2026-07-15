@@ -5,6 +5,8 @@ import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { Raffle } from 'src/raffles/entities/raffle.entity';
+import { Ticket } from 'src/tickets/entities/ticket.entity';
+import { User } from 'src/users/entities/user.entity';
 import { randomUUID, createHmac } from 'crypto';
 import {
   MercadoPagoConfig,
@@ -32,6 +34,12 @@ export class PaymentsService {
   constructor(
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+
+    @InjectRepository(Ticket)
+    private ticketRepository: Repository<Ticket>,
+
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
 
     private readonly ticketsService: TicketsService,
     private usersService: UsersService,
@@ -206,6 +214,24 @@ export class PaymentsService {
 
     // \uFEFF (BOM) al inicio para que Excel detecte bien los acentos (UTF-8).
     return '\uFEFF' + [headers.join(DELIMITER), ...rows].join('\n');
+  }
+
+  /**
+   * ⚠️ Borra TODOS los tickets, pagos y usuarios (datos de prueba).
+   * Las rifas (raffles) NO se tocan, para no tener que recrearlas.
+   * Pensado para limpiar compras de prueba antes del lanzamiento real.
+   */
+  async wipeTestData() {
+    const ticketsDeleted = await this.ticketRepository.delete({});
+    const paymentsDeleted = await this.paymentRepository.delete({});
+    const usersDeleted = await this.userRepository.delete({});
+
+    return {
+      wiped: true,
+      ticketsDeleted: ticketsDeleted.affected ?? 0,
+      paymentsDeleted: paymentsDeleted.affected ?? 0,
+      usersDeleted: usersDeleted.affected ?? 0,
+    };
   }
 
   async getPaymentStatus(externalReference: string) {
