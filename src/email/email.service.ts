@@ -10,8 +10,11 @@ export class EmailService {
     name: string,
     ticketNumbers: number[],
   ) {
+    const fromAddress = process.env.EMAIL_FROM || 'Conyapa <onboarding@resend.dev>';
+    const stickerUrl = process.env.STICKER_IMAGE_URL;
+
     const { data, error } = await this.resend.emails.send({
-      from: 'Conyapa <noreply@conyapa.cl>',
+      from: fromAddress,
       to,
       subject: 'Pago exitoso - Conyapa',
       html: `
@@ -26,12 +29,16 @@ export class EmailService {
         <p>Gracias por participar en Conyapa 🍀</p>
       `,
 
-      attachments: [
-        {
-          filename: 'sticker.jpeg',
-          path: 'https://conyapa.cl/sticker.jpeg',
-        },
-      ],
+      ...(stickerUrl
+        ? {
+            attachments: [
+              {
+                filename: 'sticker.jpeg',
+                path: stickerUrl,
+              },
+            ],
+          }
+        : {}),
 
     });
 
