@@ -149,6 +149,58 @@ export class PaymentsService {
 
 
 
+  /**
+   * Genera un CSV con todos los compradores y sus pagos, para descargar
+   * desde el navegador y abrir en Excel/Google Sheets.
+   */
+  async exportPaymentsAsCsv(): Promise<string> {
+    const payments = await this.paymentRepository.find({
+      relations: ['user', 'raffle'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const headers = [
+      'Fecha',
+      'Nombre',
+      'Email',
+      'RUT',
+      'Telefono',
+      'Direccion',
+      'Rifa',
+      'Cantidad tickets',
+      'Monto',
+      'Estado',
+    ];
+
+    const escapeCsv = (value: unknown): string => {
+      const str = value === null || value === undefined ? '' : String(value);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const rows = payments.map((p) =>
+      [
+        p.createdAt?.toISOString() ?? '',
+        p.user?.name ?? '',
+        p.user?.email ?? '',
+        p.user?.rut ?? '',
+        p.user?.phone ?? '',
+        p.user?.address ?? '',
+        p.raffle?.title ?? '',
+        p.ticketQuantity,
+        p.amount,
+        p.status,
+      ]
+        .map(escapeCsv)
+        .join(','),
+    );
+
+    // \uFEFF (BOM) al inicio para que Excel detecte bien los acentos (UTF-8).
+    return '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  }
+
   async getPaymentStatus(externalReference: string) {
     const payment = await this.paymentRepository.findOne({
       where: { externalReference },
