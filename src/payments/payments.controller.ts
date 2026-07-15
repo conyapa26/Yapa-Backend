@@ -31,6 +31,14 @@ export class PaymentsController {
     res.send(csv);
   }
 
+  // ⚠️ Borra TODOS los tickets, pagos y usuarios (deja las rifas intactas).
+  // Requiere header x-admin-api-key. Pensado para limpiar pruebas.
+  @UseGuards(AdminApiKeyGuard)
+  @Post('wipe-test-data')
+  async wipeTestData() {
+    return this.paymentsService.wipeTestData();
+  }
+
   @Post('webhook')
   async webhook(
     @Body() body: any,
