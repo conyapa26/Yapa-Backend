@@ -74,7 +74,7 @@ export class PaymentsService {
 
       const externalReference = randomUUID();
 
-      const amount = dto.tickets * 100; // ⚠️ PRECIO TEMPORAL DE PRUEBA ($100)
+      const amount = dto.tickets * raffle.price;
 
       // 🟡 1. Crear en BD como PENDING
       const payment = this.paymentRepository.create({
@@ -82,7 +82,7 @@ export class PaymentsService {
         raffle,
         externalReference,
         ticketQuantity: dto.tickets,
-        ticketPrice: 100, // ⚠️ PRECIO TEMPORAL
+        ticketPrice: raffle.price,
         amount,
         provider: 'mercadopago',
         status: PaymentStatus.PENDING,
@@ -95,7 +95,7 @@ export class PaymentsService {
           items: [
             {
               id: raffle.id.toString(),
-              title: `Compra de ${dto.tickets} ticket(s) (PRUEBA)`,
+              title: `Compra de ${dto.tickets} ticket(s) - ${raffle.title}`,
               quantity: 1,
               unit_price: amount,
               currency_id: 'CLP',
