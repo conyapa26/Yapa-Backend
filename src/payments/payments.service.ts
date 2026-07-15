@@ -154,7 +154,9 @@ export class PaymentsService {
    * desde el navegador y abrir en Excel/Google Sheets.
    */
   async exportPaymentsAsCsv(): Promise<string> {
+    // Solo se exportan los pagos aprobados (compras confirmadas).
     const payments = await this.paymentRepository.find({
+      where: { status: PaymentStatus.APPROVED },
       relations: ['user', 'raffle'],
       order: { createdAt: 'DESC' },
     });
