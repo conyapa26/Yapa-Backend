@@ -5,13 +5,16 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const allowedOrigins = [
+    'https://conyapa.cl',
+    'https://www.conyapa.cl',
+    'https://yapa-frontend-nine.vercel.app',
+    'http://localhost:5173',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: [
-      'https://conyapa.cl',
-      'https://www.conyapa.cl',
-      'https://yapa-frontend.vercel.app',
-      'http://localhost:5173'
-    ],
+    origin: allowedOrigins,
     credentials: true,
   });
 
