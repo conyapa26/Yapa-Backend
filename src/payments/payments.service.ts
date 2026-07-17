@@ -437,7 +437,7 @@ export class PaymentsService {
         await this.emailService.sendPaymentSuccessEmail(
           payment.user.email,
           payment.user.name,
-          tickets.map((t) => t.id),
+          tickets.map((t) => t.ticketNumber),
         );
       } catch (emailError) {
         console.error(
