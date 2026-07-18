@@ -57,4 +57,16 @@ export class PaymentsController {
   async getStatus(@Param('externalReference') externalReference: string) {
     return this.paymentsService.getPaymentStatus(externalReference);
   }
+
+  // Muestra en el navegador el HTML real del correo de un pago existente
+  // (no lo envía). Solo para revisar el diseño en desarrollo.
+  // Requiere header x-admin-api-key.
+  @UseGuards(AdminApiKeyGuard)
+  @Get(':id/email-preview')
+  async previewEmail(@Param('id') id: string, @Res() res: Response) {
+    const html = await this.paymentsService.previewPaymentEmail(Number(id));
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  }
 }
