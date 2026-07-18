@@ -181,6 +181,7 @@ export class PaymentsService {
       'Cantidad tickets',
       'Monto',
       'Estado',
+      'Voucher',
     ];
 
     // Usamos ';' como separador (en vez de ',') porque Excel en español
@@ -209,6 +210,7 @@ export class PaymentsService {
         p.ticketQuantity,
         p.amount,
         p.status,
+        p.providerTxId ?? '',
       ]
         .map(escapeCsv)
         .join(DELIMITER),
@@ -488,6 +490,38 @@ export class PaymentsService {
       payment.raffle.drawDate,
       payment.amount,
     );
+  }
+
+  // Borra SOLO los datos de un comprador específico (por email): sus tickets,
+  // sus pagos y su usuario. Pensado para limpiar compras de prueba puntuales
+  // sin afectar a otros compradores reales. Requiere header x-admin-api-key.
+  async deletePurchaseByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con email ${email} no encontrado`);
+    }
+
+    const ticketsDeleted = await this.ticketRepository
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId: user.id })
+      .execute();
+
+    const paymentsDeleted = await this.paymentRepository
+      .createQueryBuilder()
+      .delete()
+      .where('userId = :userId', { userId: user.id })
+      .execute();
+
+    await this.userRepository.delete(user.id);
+
+    return {
+      wiped: true,
+      email,
+      ticketsDeleted: ticketsDeleted.affected ?? 0,
+      paymentsDeleted: paymentsDeleted.affected ?? 0,
+    };
   }
 
 }
