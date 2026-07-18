@@ -210,7 +210,9 @@ export class PaymentsService {
         p.ticketQuantity,
         p.amount,
         p.status,
-        p.providerTxId ?? '',
+        // ="..." fuerza a Excel a tratarlo como texto y no como número
+        // (si no, números largos como este se muestran en notación científica).
+        p.providerTxId ? `="${p.providerTxId}"` : '',
       ]
         .map(escapeCsv)
         .join(DELIMITER),
