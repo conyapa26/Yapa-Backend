@@ -170,6 +170,7 @@ export class PaymentsService {
     });
 
     const headers = [
+      'ID',
       'Fecha',
       'Nombre',
       'Email',
@@ -197,6 +198,7 @@ export class PaymentsService {
 
     const rows = payments.map((p) =>
       [
+        p.id,
         p.createdAt?.toISOString() ?? '',
         p.user?.name ?? '',
         p.user?.email ?? '',
@@ -439,6 +441,9 @@ export class PaymentsService {
           payment.user.name,
           tickets.map((t) => t.ticketNumber),
           payment.providerTxId,
+          payment.raffle.title,
+          payment.raffle.drawDate,
+          payment.amount,
         );
       } catch (emailError) {
         console.error(
@@ -459,5 +464,30 @@ export class PaymentsService {
     }
   }
 
+  // Arma el HTML real del correo de un pago existente, sin enviarlo.
+  // Pensado solo para revisar el diseño en desarrollo.
+  async previewPaymentEmail(paymentId: number): Promise<string> {
+    const payment = await this.paymentRepository.findOne({
+      where: { id: paymentId },
+      relations: ['user', 'raffle'],
+    });
+
+    if (!payment) {
+      throw new NotFoundException(`Payment ${paymentId} no encontrado`);
+    }
+
+    const tickets = await this.ticketRepository.find({
+      where: { payment: { id: payment.id } },
+    });
+
+    return this.emailService.buildPaymentSuccessHtml(
+      payment.user.name,
+      tickets.map((t) => t.ticketNumber),
+      payment.providerTxId,
+      payment.raffle.title,
+      payment.raffle.drawDate,
+      payment.amount,
+    );
+  }
 
 }
