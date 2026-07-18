@@ -438,6 +438,7 @@ export class PaymentsService {
           payment.user.email,
           payment.user.name,
           tickets.map((t) => t.ticketNumber),
+          payment.providerTxId,
         );
       } catch (emailError) {
         console.error(
