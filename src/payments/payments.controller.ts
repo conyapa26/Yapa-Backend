@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Headers, Query, Res, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, Headers, Query, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -68,5 +68,14 @@ export class PaymentsController {
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
+  }
+
+  // ⚠️ Borra tickets, pagos y el usuario de UN comprador específico (por email).
+  // Pensado para limpiar una compra de prueba puntual sin afectar a otros
+  // compradores reales. Requiere header x-admin-api-key.
+  @UseGuards(AdminApiKeyGuard)
+  @Delete('by-email/:email')
+  async deleteByEmail(@Param('email') email: string) {
+    return this.paymentsService.deletePurchaseByEmail(email);
   }
 }
