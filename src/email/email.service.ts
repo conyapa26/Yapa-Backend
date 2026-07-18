@@ -18,11 +18,10 @@ export class EmailService {
 
       <h3>Tus números:</h3>
       <ul>
-        ${ticketNumbers.map(n => `<li>${voucher} - ${n}</li>`).join('')}
+        ${ticketNumbers.map(n => `<li>Voucher: ${voucher} - ${n}</li>`).join('')}
       </ul>
 
       <p><strong>Monto pagado:</strong> $${amount.toLocaleString('es-CL')}</p>
-      <p><strong>N° de voucher:</strong> ${voucher}</p>
 
       <p>Gracias por confiar en Conyapa. Te avisaremos apenas se realice el sorteo 🙌</p>
     `;
