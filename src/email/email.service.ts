@@ -18,8 +18,10 @@ export class EmailService {
 
       <h3>Tus números:</h3>
       <ul>
-        ${ticketNumbers.map(n => `<li>Voucher: ${voucher} - ${n}</li>`).join('')}
+        ${ticketNumbers.map(n => `<li>Número ${n}</li>`).join('')}
       </ul>
+
+      <p><strong>Voucher de compra:</strong> ${voucher}</p>
 
       <p><strong>Monto pagado:</strong> $${amount.toLocaleString('es-CL')}</p>
 
