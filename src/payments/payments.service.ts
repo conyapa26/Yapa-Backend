@@ -492,6 +492,35 @@ export class PaymentsService {
     );
   }
 
+  // Reenvía el correo real (no un preview) de un pago existente, usando
+  // la plantilla actual. Útil para reenviar tras cambios en el diseño del
+  // correo, o si el comprador dice que no le llegó. Requiere x-admin-api-key.
+  async resendPaymentEmail(paymentId: number) {
+    const payment = await this.paymentRepository.findOne({
+      where: { id: paymentId },
+      relations: ['user', 'raffle'],
+    });
+
+    if (!payment) {
+      throw new NotFoundException(`Payment ${paymentId} no encontrado`);
+    }
+
+    const tickets = await this.ticketRepository.find({
+      where: { payment: { id: payment.id } },
+    });
+
+    await this.emailService.sendPaymentSuccessEmail(
+      payment.user.email,
+      payment.user.name,
+      tickets.map((t) => t.ticketNumber),
+      payment.providerTxId,
+      payment.raffle.title,
+      payment.amount,
+    );
+
+    return { sent: true, to: payment.user.email };
+  }
+
   // Borra SOLO los datos de un comprador específico (por email): sus tickets,
   // sus pagos y su usuario. Pensado para limpiar compras de prueba puntuales
   // sin afectar a otros compradores reales. Requiere header x-admin-api-key.

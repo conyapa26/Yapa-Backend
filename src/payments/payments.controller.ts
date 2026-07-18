@@ -70,6 +70,14 @@ export class PaymentsController {
     res.send(html);
   }
 
+  // Reenvía el correo real (no un preview) de un pago existente, con la
+  // plantilla actual. Requiere header x-admin-api-key.
+  @UseGuards(AdminApiKeyGuard)
+  @Post(':id/resend-email')
+  async resendEmail(@Param('id') id: string) {
+    return this.paymentsService.resendPaymentEmail(Number(id));
+  }
+
   // ⚠️ Borra tickets, pagos y el usuario de UN comprador específico (por email).
   // Pensado para limpiar una compra de prueba puntual sin afectar a otros
   // compradores reales. Requiere header x-admin-api-key.
