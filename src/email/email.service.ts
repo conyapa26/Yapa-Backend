@@ -9,6 +9,7 @@ export class EmailService {
     to: string,
     name: string,
     ticketNumbers: number[],
+    voucher: string,
   ) {
     const fromAddress = process.env.EMAIL_FROM || 'Conyapa <onboarding@resend.dev>';
     const stickerUrl = process.env.STICKER_IMAGE_URL;
@@ -20,6 +21,8 @@ export class EmailService {
       html: `
         <h1>¡Pago exitoso!</h1>
         <p>Hola ${name}, tu compra fue confirmada.</p>
+
+        <p><strong>N° de voucher:</strong> ${voucher}</p>
 
         <h3>Números comprados:</h3>
         <ul>
