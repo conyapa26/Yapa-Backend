@@ -5,32 +5,63 @@ import { Resend } from 'resend';
 export class EmailService {
   private resend = new Resend(process.env.RESEND_API_KEY);
 
+  buildPaymentSuccessHtml(
+    name: string,
+    ticketNumbers: number[],
+    voucher: string,
+    raffleTitle: string,
+    drawDate: Date,
+    amount: number,
+  ): string {
+    const drawDateFormatted = new Date(drawDate).toLocaleDateString('es-CL', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    return `
+      <h1>¡Hola ${name}, tu pago fue confirmado! 🎉</h1>
+      <p>Ya estás participando en <strong>${raffleTitle}</strong>. Mucha suerte, ¡ojalá te ganes el premio! 🍀</p>
+
+      <h3>Tus números:</h3>
+      <ul>
+        ${ticketNumbers.map(n => `<li>🎟️ ${n}</li>`).join('')}
+      </ul>
+
+      <p><strong>Fecha del sorteo:</strong> ${drawDateFormatted}</p>
+      <p><strong>Monto pagado:</strong> $${amount.toLocaleString('es-CL')}</p>
+      <p><strong>N° de voucher:</strong> ${voucher}</p>
+
+      <p>Gracias por confiar en Conyapa. Te avisaremos apenas se realice el sorteo 🙌</p>
+    `;
+  }
+
   async sendPaymentSuccessEmail(
     to: string,
     name: string,
     ticketNumbers: number[],
     voucher: string,
+    raffleTitle: string,
+    drawDate: Date,
+    amount: number,
   ) {
     const fromAddress = process.env.EMAIL_FROM || 'Conyapa <onboarding@resend.dev>';
     const stickerUrl = process.env.STICKER_IMAGE_URL;
 
+    const html = this.buildPaymentSuccessHtml(
+      name,
+      ticketNumbers,
+      voucher,
+      raffleTitle,
+      drawDate,
+      amount,
+    );
+
     const { data, error } = await this.resend.emails.send({
       from: fromAddress,
       to,
-      subject: 'Pago exitoso - Conyapa',
-      html: `
-        <h1>¡Pago exitoso!</h1>
-        <p>Hola ${name}, tu compra fue confirmada.</p>
-
-        <p><strong>N° de voucher:</strong> ${voucher}</p>
-
-        <h3>Números comprados:</h3>
-        <ul>
-          ${ticketNumbers.map(n => `<li>${n}</li>`).join('')}
-        </ul>
-
-        <p>Gracias por participar en Conyapa 🍀</p>
-      `,
+      subject: `¡${name}, tu compra para "${raffleTitle}" fue exitosa! 🎟️`,
+      html,
 
       ...(stickerUrl
         ? {
