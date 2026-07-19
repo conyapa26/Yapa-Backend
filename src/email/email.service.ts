@@ -20,8 +20,7 @@ export class EmailService {
       <ul style="list-style: none; padding: 0;">
         ${ticketNumbers.map(n => `
           <li style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;">
-            <div>Voucher del ticket: <strong>${voucher}</strong></div>
-            <div>Número de ticket: <strong>${n}</strong></div>
+            <strong>${voucher}-${n}</strong>
           </li>
         `).join('')}
       </ul>
