@@ -85,6 +85,19 @@ export class EmailService {
       ${hitosHtml}
 
       <p>Gracias por confiar en Conyapa. Te avisaremos apenas se realice el sorteo 🙌</p>
+
+      <div style="text-align: center; margin-top: 32px; padding: 24px; background: #f9fafb; border-radius: 12px;">
+        <p style="margin: 0 0 16px 0; font-size: 16px;">
+          Mientras más tickets tengas, más chances de ganar 🍀<br/>
+          ¡Comparte con tu familia y amigos y súmalos a la yapa!
+        </p>
+        <a
+          href="https://conyapa.cl"
+          style="display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 8px;"
+        >
+          Comprar más tickets en conyapa.cl
+        </a>
+      </div>
     `;
   }
 
