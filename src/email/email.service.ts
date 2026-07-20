@@ -70,6 +70,7 @@ export class EmailService {
       <p>Ya estás participando en <strong>${raffleTitle}</strong>. Mucha suerte, ¡ojalá te ganes el premio! 🍀</p>
 
       <h3>Tus números:</h3>
+      <p>Tu número de voucher es: <strong>${voucher}</strong></p>
       <ul style="list-style: none; padding: 0;">
         ${ticketNumbers.map(n => `
           <li style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;">
